@@ -1,0 +1,98 @@
+# Decap CMS 設定檔 — 帕咔布托嬰中心 PaKaBoo Nursery
+# ---------------------------------------------------------------
+# 這份檔案決定「後台長什麼樣、有哪些欄位」。
+# backend 為上線時要填的設定（GitHub repo + DecapBridge 登入）。
+# 上線步驟見 cms/GO-LIVE-RUNBOOK.md。
+# 本機測試可改用 local_backend（見 runbook）。
+# ---------------------------------------------------------------
+
+backend:
+  name: git-gateway
+  repo: yuhansu0908/pakaboo-site        # 你的 GitHub repo
+  branch: main
+  auth_type: pkce
+  base_url: https://auth.decapbridge.com
+  auth_endpoint: /sites/REPLACE_WITH_DECAPBRIDGE_SITE_ID/pkce
+  auth_token_endpoint: /sites/REPLACE_WITH_DECAPBRIDGE_SITE_ID/token
+  gateway_url: https://gateway.decapbridge.com
+  commit_messages:
+    create: 'Create {{collection}} "{{slug}}" - {{author-name}} <{{author-login}}> via DecapBridge'
+    update: 'Update {{collection}} "{{slug}}" - {{author-name}} <{{author-login}}> via DecapBridge'
+    delete: 'Delete {{collection}} "{{slug}}" - {{author-name}} <{{author-login}}> via DecapBridge'
+    uploadMedia: 'Upload "{{path}}" - {{author-name}} <{{author-login}}> via DecapBridge'
+    deleteMedia: 'Delete "{{path}}" - {{author-name}} <{{author-login}}> via DecapBridge'
+
+auth:
+  email_claim: email
+  first_name_claim: first_name
+  last_name_claim: last_name
+  avatar_url_claim: avatar_url
+
+media_folder: "assets/uploads"      # 上傳的照片實際存放處
+public_folder: "/assets/uploads"    # 網頁引用照片的路徑
+
+locale: "zh_Hant"
+
+collections:
+  # ---------- 1. 最新消息（文章） ----------
+  - name: "news"
+    label: "最新消息"
+    label_singular: "一則消息"
+    folder: "cms/content/news"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{date}}　{{title}}"
+    sortable_fields: [date, title]
+    fields:
+      - { name: "title", label: "標題", widget: "string", hint: "例：帕咔布正式導入職能治療師入園觀察" }
+      - { name: "date", label: "發布日期", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { name: "cover", label: "封面圖／照片（可留空）", widget: "image", required: false, hint: "點此上傳圖片，會顯示在消息列表與文章頁最上方" }
+      - { name: "summary", label: "一句話摘要", widget: "string", required: false, hint: "顯示在列表上的簡介" }
+      - { name: "pinned", label: "置頂", widget: "boolean", default: false }
+      - { name: "body", label: "內文", widget: "markdown" }
+
+  # ---------- 2. 活動 / 講座（行事曆） ----------
+  - name: "events"
+    label: "活動・講座"
+    label_singular: "一場活動"
+    folder: "cms/content/events"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{date}}　{{title}}"
+    sortable_fields: [date, title]
+    fields:
+      - { name: "title", label: "活動名稱", widget: "string", hint: "例：假日寶貝探索趣・親子音樂體驗" }
+      - name: "type"
+        label: "類型"
+        widget: "select"
+        default: "activity"
+        options:
+          - { label: "活動", value: "activity" }
+          - { label: "講座", value: "talk" }
+          - { label: "其他", value: "other" }
+      - { name: "date", label: "活動日期", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { name: "time", label: "時間（文字，可留空）", widget: "string", required: false, hint: "例：上午 10:00–11:30" }
+      - { name: "location", label: "地點（可留空）", widget: "string", required: false, default: "帕咔布托嬰中心" }
+      - { name: "cover", label: "活動海報／照片（可留空）", widget: "image", required: false, hint: "點此上傳活動海報或照片，會顯示在活動卡左側" }
+      - { name: "summary", label: "一句話簡介", widget: "string", required: false }
+      - { name: "signup_url", label: "報名/詢問連結（可留空）", widget: "string", required: false, hint: "留空則顯示官方 LINE" }
+      - { name: "body", label: "活動詳情", widget: "markdown", required: false }
+
+  # ---------- 3. 園區照片（環境實景） ----------
+  - name: "gallery"
+    label: "園區照片"
+    delete: false
+    files:
+      - name: "campus"
+        label: "園區實景照片"
+        file: "cms/content/gallery.yml"
+        description: "上傳園區照片，會顯示在「園區生活 → 環境實景」。留空則顯示預設版位。"
+        fields:
+          - name: "photos"
+            label: "照片清單"
+            widget: "list"
+            label_singular: "一張照片"
+            summary: "{{fields.caption}}"
+            fields:
+              - { name: "image", label: "照片", widget: "image" }
+              - { name: "caption", label: "說明文字（可留空）", widget: "string", required: false, hint: "例：溫暖入口" }
