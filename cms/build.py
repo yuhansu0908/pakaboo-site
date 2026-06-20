@@ -9,7 +9,7 @@
 
 執行：python3 build.py     （需 pyyaml）
 """
-import os, re, shutil, html, datetime
+import os, re, shutil, html, datetime, urllib.parse
 import yaml
 
 ROOT = os.path.dirname(os.path.abspath(__file__))     # .../Pakaboo Website/cms
@@ -159,8 +159,11 @@ def md_to_html(body):
 
 def img_src(v, root=""):
     v = str(v or "")
-    if v.startswith("http") or v.startswith("/"): return v
-    return root + v
+    if not v: return v
+    if v.startswith("http"): return v
+    # URL-encode spaces/special chars in the path so any filename works (keep slashes)
+    if v.startswith("/"): return urllib.parse.quote(v, safe="/")
+    return urllib.parse.quote(root + v, safe="/")
 
 # ---------- NEWS ----------
 def order_news(news):

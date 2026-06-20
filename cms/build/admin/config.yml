@@ -12,8 +12,8 @@ backend:
   branch: main
   auth_type: pkce
   base_url: https://auth.decapbridge.com
-  auth_endpoint: /sites/REPLACE_WITH_DECAPBRIDGE_SITE_ID/pkce
-  auth_token_endpoint: /sites/REPLACE_WITH_DECAPBRIDGE_SITE_ID/token
+  auth_endpoint: /sites/a276fa6b-f3d7-45eb-99ee-b48f38be1a62/pkce
+  auth_token_endpoint: /sites/a276fa6b-f3d7-45eb-99ee-b48f38be1a62/token
   gateway_url: https://gateway.decapbridge.com
   commit_messages:
     create: 'Create {{collection}} "{{slug}}" - {{author-name}} <{{author-login}}> via DecapBridge'
