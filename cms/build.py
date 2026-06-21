@@ -49,6 +49,11 @@ def load_gallery():
     data = yaml.safe_load(open(f, encoding="utf-8").read()) or {}
     return data.get("photos") or []
 
+def load_menu():
+    f = os.path.join(ROOT, "content", "menu.yml")
+    if not os.path.exists(f): return {}
+    return yaml.safe_load(open(f, encoding="utf-8").read()) or {}
+
 # ---------- shared shell ----------
 def nav(active, root=""):
     def hl(name, page, label):
@@ -288,6 +293,20 @@ def inject_gallery(src, photos):
                   '<!--CMS:GALLERY-->\n    ' + block + '\n    <!--/CMS:GALLERY-->',
                   src, flags=re.S)
 
+def inject_menu(src, menu):
+    """注入當月菜單圖到 life.html。menu.yml 留空則維持預設菜單參考表。"""
+    if not menu or not menu.get("image"):
+        return src
+    img = img_src(menu.get("image"))
+    month = menu.get("month", "")
+    alt = esc(month or "帕咔布托嬰中心 當月菜單")
+    monthhtml = (f'<p class="center reveal" style="color:var(--brown);font-family:\'Noto Serif TC\',serif;'
+                 f'letter-spacing:2px;font-size:15px;margin-bottom:18px">{esc(month)}</p>') if month else ''
+    block = f'{monthhtml}<div class="menuwrap reveal d2"><img src="{esc(img)}" alt="{alt}"></div>'
+    return re.sub(r'<!--CMS:MENU-->.*?<!--/CMS:MENU-->',
+                  '<!--CMS:MENU-->\n    ' + block + '\n    <!--/CMS:MENU-->',
+                  src, flags=re.S)
+
 def inject_latest_news(src, news):
     latest = order_news(news)[:3]
     if latest:
@@ -303,6 +322,7 @@ def main():
     news = load_md("news")
     events = load_md("events")
     photos = load_gallery()
+    menu = load_menu()
 
     os.makedirs(os.path.join(OUT, "news"), exist_ok=True)
     # assets (+ uploads) and admin
@@ -322,10 +342,11 @@ def main():
             src = inject_latest_news(src, news)
         if fn == "life.html":
             src = inject_gallery(src, photos)
+            src = inject_menu(src, menu)
         open(os.path.join(OUT, fn),"w",encoding="utf-8").write(src)
 
     print(f"Built → {OUT}")
-    print(f"  news: {len(news)} 篇　events: {len(events)} 場（upcoming/past 依今天 {TODAY}）　gallery photos: {len(photos)}")
+    print(f"  news: {len(news)} 篇　events: {len(events)} 場（upcoming/past 依今天 {TODAY}）　gallery photos: {len(photos)}　menu: {'自訂' if menu.get('image') else '預設'}")
     print("  pages:", sorted(os.listdir(OUT)))
 
 if __name__ == "__main__":
