@@ -78,7 +78,20 @@ collections:
       - { name: "signup_url", label: "報名/詢問連結（可留空）", widget: "string", required: false, hint: "留空則顯示官方 LINE" }
       - { name: "body", label: "活動詳情", widget: "markdown", required: false }
 
-  # ---------- 3. 園區照片（環境實景） ----------
+  # ---------- 3. 當月菜單 ----------
+  - name: "menu"
+    label: "當月菜單"
+    delete: false
+    files:
+      - name: "current"
+        label: "當月菜單圖"
+        file: "cms/content/menu.yml"
+        description: "上傳當月菜單圖片，會顯示在「園區生活 → 當月菜單」。留空則顯示預設菜單參考表。"
+        fields:
+          - { name: "image", label: "菜單圖片", widget: "image", required: false, hint: "點此上傳當月菜單照片或掃描圖。直式、橫式皆可。" }
+          - { name: "month", label: "月份標示（可留空）", widget: "string", required: false, hint: "例：2026 年 7 月菜單。會顯示在菜單圖上方。" }
+
+  # ---------- 4. 園區照片（環境實景） ----------
   - name: "gallery"
     label: "園區照片"
     delete: false
