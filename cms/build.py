@@ -78,7 +78,7 @@ def nav(active, root=""):
         <button class="mtrig">課程{ARROW}</button>
         <div class="sub">
           <a href="{root}courses.html#sensory">感官課程 · 英國BMST系統</a>
-          <a href="{root}courses.html#music">音樂教育 · 美國</a>
+          <a href="{root}courses.html#music">音樂教育 · 美國MT系統</a>
           <a href="{root}courses.html#ot">職能守護 · OT進駐</a>
           <a href="{root}courses.html#golden">黃金三角</a>
         </div>
